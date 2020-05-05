@@ -1,3 +1,4 @@
-saved
-logs
-.ipynb_checkpoints
+saved/
+logs/
+.ipynb_checkpoints/
+__pycache__
