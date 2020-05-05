@@ -6,6 +6,10 @@ from models import XChest
 from data_loader import data_gen
 import config
 
+flags.DEFINE_string('model', default='densenet', help='Model name')
+
+_flags = flags.FLAGS
+
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 
@@ -28,14 +32,19 @@ def get_callbacks(model_name):
     return callbacks
 
 
-x_chest = XChest(config.model_name, input_shape=(config.image_height, config.image_width, 3))
-model = x_chest.build()
-train_gen, valid_gen, test_X, test_Y, train_len, test_len = data_gen()
+def main(_):
+    x_chest = XChest(_flags.model, input_shape=(config.image_height, config.image_width, 3))
+    model = x_chest.build()
+    train_gen, valid_gen, test_X, test_Y, train_len, test_len = data_gen()
 
-callbacks = get_callbacks(config.model_name)
+    callbacks = get_callbacks(_flags.model)
 
-model.fit_generator(train_gen,
-                    steps_per_epoch=train_len / 32,
-                    validation_data=(test_X, test_Y),
-                    epochs=50,
-                    callbacks=callbacks)
+    model.fit_generator(train_gen,
+                        steps_per_epoch=train_len // 32,
+                        validation_data=(test_X, test_Y),
+                        epochs=50,
+                        callbacks=callbacks)
+
+
+if __name__ == '__main__':
+    app.run(main)
