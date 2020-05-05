@@ -64,8 +64,7 @@ def data_gen():
 
 def prepare_data(data_path):
     data = pd.read_csv(os.path.join(data_path, 'Data_Entry_2017.csv'))
-    data['Patient Age'] = data['Patient Age'].map(lambda x: int(x[:-1]))
-    data = data[data['Patient Age'] < 100]
+    
     data_image_paths = {os.path.basename(x): x for x in
                         glob(os.path.join(data_path, 'images', '*.png'))}
 
