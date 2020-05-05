@@ -30,12 +30,12 @@ def get_callbacks(model_name):
 
 x_chest = XChest(config.model_name, input_shape=(config.image_height, config.image_width, 3))
 model = x_chest.build()
-train_gen, valid_gen, test_X, test_Y = data_gen()
+train_gen, valid_gen, test_X, test_Y, train_len, test_len = data_gen()
 
 callbacks = get_callbacks(config.model_name)
 
 model.fit_generator(train_gen,
-                    steps_per_epoch=100,
+                    steps_per_epoch=train_len / 32,
                     validation_data=(test_X, test_Y),
-                    epochs=10,
+                    epochs=50,
                     callbacks=callbacks)

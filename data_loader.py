@@ -59,12 +59,12 @@ def data_gen():
                                                        classes=all_labels,
                                                        target_size=(config.image_height, config.image_width)))
 
-    return train_gen, valid_gen, test_X, test_Y
+    return train_gen, valid_gen, test_X, test_Y, train_df.shape[0], valid_df.shape[0]
 
 
 def prepare_data(data_path):
     data = pd.read_csv(os.path.join(data_path, 'Data_Entry_2017.csv'))
-    
+
     data_image_paths = {os.path.basename(x): x for x in
                         glob(os.path.join(data_path, 'images', '*.png'))}
 
