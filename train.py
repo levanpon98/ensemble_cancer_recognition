@@ -30,9 +30,8 @@ def get_callbacks(model_name):
 
 def main(_):
     train_gen, valid_gen, test_X, test_Y, train_len, test_len = data_gen(_flags.input)
-    t_x, t_y = next(train_gen)
 
-    x_chest = XChest(_flags.model, input_shape=t_x.shape[1:])
+    x_chest = XChest(_flags.model, input_shape=(config.image_height, config.image_width, 3))
     model = x_chest.build()
 
     callbacks = get_callbacks(_flags.model)
