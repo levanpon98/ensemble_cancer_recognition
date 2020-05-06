@@ -5,21 +5,36 @@ import pandas as pd
 from itertools import chain
 from glob import glob
 from sklearn.model_selection import train_test_split
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from keras.preprocessing.image import ImageDataGenerator
 
 import config
 
 
-def data_gen():
-    data, all_labels = prepare_data(config.data_path)
+def flow_from_dataframe(img_data_gen, in_df, path_col, y_col, **dflow_args):
+    base_dir = os.path.dirname(in_df[path_col].values[0])
+    print('## Ignore next message from keras, values are replaced anyways')
+    df_gen = img_data_gen.flow_from_directory(base_dir,
+                                              class_mode='sparse',
+                                              **dflow_args)
+    df_gen.filenames = in_df[path_col].values
+    df_gen.classes = np.stack(in_df[y_col].values)
+    df_gen.samples = in_df.shape[0]
+    df_gen.n = in_df.shape[0]
+    df_gen._set_index_array()
+    df_gen.directory = ''  # since we have the full path
+    print('Reinserting dataframe: {} images'.format(in_df.shape[0]))
+    return df_gen
+
+
+def data_gen(data_path):
+    data, all_labels = prepare_data(data_path)
     train_df, valid_df = train_test_split(data,
                                           test_size=0.20,
                                           random_state=2018,
                                           stratify=data['Finding Labels'].map(lambda x: x[:4]))
     print('train', train_df.shape[0], 'validation', valid_df.shape[0])
 
-    train_df['labels'] = train_df.apply(lambda x: x['Finding Labels'].split('|'), axis=1)
-    valid_df['labels'] = valid_df.apply(lambda x: x['Finding Labels'].split('|'), axis=1)
+    IMG_SIZE = (config.image_height, config.image_width)
 
     core_idg = ImageDataGenerator(samplewise_center=True,
                                   samplewise_std_normalization=True,
@@ -32,32 +47,27 @@ def data_gen():
                                   fill_mode='reflect',
                                   zoom_range=0.15)
 
-    train_gen = core_idg.flow_from_dataframe(dataframe=train_df,
-                                             directory=None,
-                                             x_col='path',
-                                             y_col='labels',
-                                             class_mode='categorical',
-                                             batch_size=32,
-                                             classes=all_labels,
-                                             target_size=(config.image_height, config.image_width))
+    train_gen = flow_from_dataframe(core_idg, train_df,
+                                    path_col='path',
+                                    y_col='disease_vec',
+                                    target_size=IMG_SIZE,
+                                    color_mode='grayscale',
+                                    batch_size=32)
 
-    valid_gen = core_idg.flow_from_dataframe(dataframe=valid_df,
-                                             directory=None,
-                                             x_col='path',
-                                             y_col='labels',
-                                             class_mode='categorical',
-                                             batch_size=256,
-                                             classes=all_labels,
-                                             target_size=(config.image_height, config.image_width))
+    valid_gen = flow_from_dataframe(core_idg, valid_df,
+                                    path_col='path',
+                                    y_col='disease_vec',
+                                    target_size=IMG_SIZE,
+                                    color_mode='grayscale',
+                                    batch_size=256)
 
-    test_X, test_Y = next(core_idg.flow_from_dataframe(dataframe=valid_df,
-                                                       directory=None,
-                                                       x_col='path',
-                                                       y_col='labels',
-                                                       class_mode='categorical',
-                                                       batch_size=1024,
-                                                       classes=all_labels,
-                                                       target_size=(config.image_height, config.image_width)))
+    test_X, test_Y = next(flow_from_dataframe(core_idg,
+                                              valid_df,
+                                              path_col='path',
+                                              y_col='disease_vec',
+                                              target_size=IMG_SIZE,
+                                              color_mode='grayscale',
+                                              batch_size=1024))
 
     return train_gen, valid_gen, test_X, test_Y, train_df.shape[0], valid_df.shape[0]
 
@@ -83,5 +93,5 @@ def prepare_data(data_path):
     all_labels = [c_label for c_label in all_labels if data[c_label].sum() > config.min_cases]
     print('Clean Labels ({})'.format(len(all_labels)), [(c_label, int(data[c_label].sum())) for c_label in all_labels])
 
+    data['disease_vec'] = data.apply(lambda x: [x[all_labels].values], 1).map(lambda x: x[0])
     return data, all_labels
-

@@ -33,7 +33,7 @@ class XChest():
             model.summary()
 
             model.compile(optimizer=self.optimizer, loss=self.loss,
-                          metrics=['accuracy'])
+                          metrics=['binary_accuracy', 'mae'])
             return model
         elif self.model_name == 'ensemble':
             input_tensor = tf.keras.layers.Input(shape=self.input_shape)
@@ -51,7 +51,7 @@ class XChest():
                 model_.summary()
 
                 model_.compile(optimizer=self.optimizer, loss=self.loss,
-                               metrics=['accuracy'])
+                               metrics=['binary_accuracy', 'mae'])
 
                 model_.load_weights(os.path.join(config.model_path, f'model.{self.model_name}.h5'))
                 models.append(model_)

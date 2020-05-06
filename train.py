@@ -7,6 +7,7 @@ from data_loader import data_gen
 import config
 
 flags.DEFINE_string('model', default='densenet', help='Model name')
+flags.DEFINE_string('input', default='../x-ray-data', help='Data Path')
 
 _flags = flags.FLAGS
 
@@ -24,18 +25,15 @@ def get_callbacks(model_name):
             save_best_only=True)
         callbacks.append(checkpoint)
 
-    early = tf.keras.callbacks.EarlyStopping(monitor="val_loss",
-                                             mode="min",
-                                             patience=3)
-    callbacks.append(early)
-
     return callbacks
 
 
 def main(_):
-    x_chest = XChest(_flags.model, input_shape=(config.image_height, config.image_width, 3))
+    train_gen, valid_gen, test_X, test_Y, train_len, test_len = data_gen(_flags.input)
+    t_x, t_y = next(train_gen)
+
+    x_chest = XChest(_flags.model, input_shape=t_x.shape[1:])
     model = x_chest.build()
-    train_gen, valid_gen, test_X, test_Y, train_len, test_len = data_gen()
 
     callbacks = get_callbacks(_flags.model)
 
