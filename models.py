@@ -12,7 +12,7 @@ class XChest():
         self.model_name = model_name
         self.input_shape = input_shape
         self.optimizer = tf.keras.optimizers.Adam(lr=0.001)
-        self.loss = 'categorical_crossentropy'
+        self.loss = 'binary_crossentropy'
         self.list_model = {
             'densenet': DenseNet121,
             'xception': Xception,
@@ -35,7 +35,7 @@ class XChest():
             model.summary()
 
             model.compile(optimizer=self.optimizer, loss=self.loss,
-                          metrics=['accuracy', 'mae'])
+                          metrics=['binary_accuracy', 'mae'])
             return model
         elif self.model_name == 'ensemble':
             input_tensor = tf.keras.layers.Input(shape=self.input_shape)
@@ -55,7 +55,7 @@ class XChest():
                 model_.summary()
 
                 model_.compile(optimizer=self.optimizer, loss=self.loss,
-                               metrics=['accuracy', 'mae'])
+                               metrics=['binary_accuracy', 'mae'])
 
                 model_.load_weights(os.path.join(config.model_path, f'model.{self.model_name}.h5'))
                 models.append(model_)
