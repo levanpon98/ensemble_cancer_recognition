@@ -10,7 +10,7 @@ import config
 
 flags.DEFINE_string('model', default='densenet', help='Model name')
 flags.DEFINE_string('input', default='/home/levanpon/data/ChestXray-NIHCC/', help='Data Path')
-flags.DEFINE_int('epochs', default=10, help='Number of epochs')
+flags.DEFINE_integer('epochs', default=10, help='Number of epochs')
 _flags = flags.FLAGS
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
