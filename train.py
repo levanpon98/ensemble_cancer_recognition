@@ -7,7 +7,7 @@ from data_loader import data_gen
 import config
 
 flags.DEFINE_string('model', default='densenet', help='Model name')
-flags.DEFINE_string('input', default='../x-ray-data', help='Data Path')
+flags.DEFINE_string('input', default='/home/levanpon/data/ChestXray-NIHCC/', help='Data Path')
 
 _flags = flags.FLAGS
 
