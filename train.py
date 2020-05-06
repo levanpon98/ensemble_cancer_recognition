@@ -10,7 +10,7 @@ import config
 
 flags.DEFINE_string('model', default='densenet', help='Model name')
 flags.DEFINE_string('input', default='/home/levanpon/data/ChestXray-NIHCC/', help='Data Path')
-
+flags.DEFINE_int('epochs', default=10, help='Number of epochs')
 _flags = flags.FLAGS
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
@@ -18,7 +18,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 def get_callbacks(model_name):
     callbacks = []
-    tensor_board = tf.keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=32)
+    tensor_board = tf.keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0)
     callbacks.append(tensor_board)
     if model_name != 'ensemble':
         checkpoint = tf.keras.callbacks.ModelCheckpoint(
@@ -42,7 +42,7 @@ def main(_):
         model.fit_generator(train_gen,
                             steps_per_epoch=train_len // 32,
                             validation_data=(test_X, test_Y),
-                            epochs=50,
+                            epochs=_flags.epochs,
                             callbacks=callbacks)
 
     y_pred = model.predict(test_X)
