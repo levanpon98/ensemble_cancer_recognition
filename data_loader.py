@@ -50,7 +50,7 @@ def data_gen(data_path):
                                              batch_size=256,
                                              classes=all_labels,
                                              target_size=(config.image_height, config.image_width))
-
+    
     test_X, test_Y = next(core_idg.flow_from_dataframe(dataframe=valid_df,
                                                        directory=None,
                                                        x_col='path',
@@ -60,7 +60,7 @@ def data_gen(data_path):
                                                        classes=all_labels,
                                                        target_size=(config.image_height, config.image_width)))
 
-    return train_gen, valid_gen, test_X, test_Y, train_df.shape[0], valid_df.shape[0]
+    return train_gen, valid_gen, test_X, test_Y, train_df.shape[0], valid_df.shape[0], all_labels
 
 
 def prepare_data(data_path):

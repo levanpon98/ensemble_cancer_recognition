@@ -1,8 +1,10 @@
 import os
 import tensorflow as tf
+import numpy as np
 from absl import app, flags
-
+from sklearn.metrics import roc_curve, auc, roc_auc_score
 from models import XChest
+from matplotlib import pyplot as plt
 from data_loader import data_gen
 import config
 
@@ -29,18 +31,36 @@ def get_callbacks(model_name):
 
 
 def main(_):
-    train_gen, valid_gen, test_X, test_Y, train_len, test_len = data_gen(_flags.input)
+    train_gen, valid_gen, test_X, test_Y, train_len, test_len, all_labels = data_gen(_flags.input)
 
     x_chest = XChest(_flags.model, input_shape=(config.image_height, config.image_width, 3))
     model = x_chest.build()
 
     callbacks = get_callbacks(_flags.model)
 
-    model.fit_generator(train_gen,
-                        steps_per_epoch=train_len // 32,
-                        validation_data=(test_X, test_Y),
-                        epochs=50,
-                        callbacks=callbacks)
+    if _flags.model != 'ensemble':
+        model.fit_generator(train_gen,
+                            steps_per_epoch=train_len // 32,
+                            validation_data=(test_X, test_Y),
+                            epochs=50,
+                            callbacks=callbacks)
+
+    y_pred = model.predict(test_X)
+    for c_label, p_count, t_count in zip(all_labels,
+                                         100 * np.mean(y_pred, 0),
+                                         100 * np.mean(test_Y, 0)):
+        print('%s: actual: %2.2f%%, predicted: %2.2f%%' % (c_label, t_count, p_count))
+
+    fig, c_ax = plt.subplots(1, 1, figsize=(9, 9))
+    for (idx, c_label) in enumerate(all_labels):
+        fpr, tpr, thresholds = roc_curve(test_Y[:, idx].astype(int), y_pred[:, idx])
+        c_ax.plot(fpr, tpr, label='%s (AUC:%0.2f)' % (c_label, auc(fpr, tpr)))
+    c_ax.legend()
+    c_ax.set_xlabel('False Positive Rate')
+    c_ax.set_ylabel('True Positive Rate')
+    fig.savefig('trained_net.png')
+
+    roc_auc_score(test_Y.astype(int), y_pred)
 
 
 if __name__ == '__main__':

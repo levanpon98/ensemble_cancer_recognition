@@ -29,7 +29,7 @@ class XChest():
             x = tf.keras.layers.Dense(units=512, activation='relu')(x)
             x = tf.keras.layers.Dropout(0.3)(x)
             x = tf.keras.layers.Dense(units=512, activation='relu')(x)
-            output = tf.keras.layers.Dense(units=14, activation='softmax')(x)
+            output = tf.keras.layers.Dense(units=14, activation="sigmoid")(x)
 
             model = tf.keras.Model(base_model.input, output)
             model.summary()
@@ -49,7 +49,7 @@ class XChest():
                 x = tf.keras.layers.Dense(units=512, activation='relu')(x)
                 x = tf.keras.layers.Dropout(0.3)(x)
                 x = tf.keras.layers.Dense(units=512, activation='relu')(x)
-                output = tf.keras.layers.Dense(units=14, activation='softmax')(x)
+                output = tf.keras.layers.Dense(units=14, activation='sigmoid')(x)
 
                 model_ = tf.keras.Model(base_model.input, output)
                 model_.summary()
