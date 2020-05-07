@@ -26,11 +26,11 @@ class XChest():
                                                           pooling ='avg')
 
             x = base_model.output
-            x = tf.keras.layers.GlobalAveragePooling2D()(x)
-            x = tf.keras.layers.Dropout(0.3)(x)
-            x = tf.keras.layers.Dense(units=512, activation='relu')(x)
-            x = tf.keras.layers.Dropout(0.3)(x)
-            x = tf.keras.layers.Dense(units=512, activation='relu')(x)
+            # x = tf.keras.layers.GlobalAveragePooling2D()(x)
+            # x = tf.keras.layers.Dropout(0.3)(x)
+            # x = tf.keras.layers.Dense(units=512, activation='relu')(x)
+            # x = tf.keras.layers.Dropout(0.3)(x)
+            # x = tf.keras.layers.Dense(units=512, activation='relu')(x)
             output = tf.keras.layers.Dense(units=13, activation="sigmoid")(x)
 
             model = tf.keras.Model(base_model.input, output)
