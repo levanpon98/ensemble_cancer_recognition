@@ -21,7 +21,9 @@ class XChest():
 
     def build(self):
         if self.model_name in self.list_model:
-            base_model = self.list_model[self.model_name](include_top=False, weights=None, input_shape=self.input_shape)
+            base_model = self.list_model[self.model_name](include_top=False, weights='imagenet',
+                                                          input_shape=self.input_shape,
+                                                          pooling ='avg')
 
             x = base_model.output
             x = tf.keras.layers.GlobalAveragePooling2D()(x)
@@ -32,7 +34,7 @@ class XChest():
             output = tf.keras.layers.Dense(units=13, activation="sigmoid")(x)
 
             model = tf.keras.Model(base_model.input, output)
-            model.summary()
+            # model.summary()
 
             model.compile(optimizer=self.optimizer, loss=self.loss,
                           metrics=['binary_accuracy', 'mae'])
@@ -52,7 +54,7 @@ class XChest():
                 output = tf.keras.layers.Dense(units=13, activation='sigmoid')(x)
 
                 model_ = tf.keras.Model(base_model.input, output)
-                model_.summary()
+                # model_.summary()
 
                 model_.compile(optimizer=self.optimizer, loss=self.loss,
                                metrics=['binary_accuracy', 'mae'])

@@ -10,6 +10,20 @@ flags.DEFINE_string('model', default='densenet', help='Model name')
 
 _flags = flags.FLAGS
 
+list_labels = ['Atelectasis',
+               'Cardiomegaly',
+               'Consolidation',
+               'Edema',
+               'Effusion',
+               'Emphysema',
+               'Fibrosis',
+               'Infiltration',
+               'Mass',
+               'Nodule',
+               'Pleural_Thickening',
+               'Pneumonia',
+               'Pneumothorax']
+
 
 def main(_):
     image_path = _flags.image
@@ -26,8 +40,9 @@ def main(_):
     img = np.expand_dims(img, axis=0).astype('float') / 255.
 
     out = model.predict(img)
-
-    print(out)
+    # print(out)
+    for i, score in enumerate(out[0]):
+        print(list_labels[i], ': {:.2f}'.format(score))
 
 
 if __name__ == '__main__':

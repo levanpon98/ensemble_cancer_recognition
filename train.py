@@ -65,3 +65,19 @@ def main(_):
 
 if __name__ == '__main__':
     app.run(main)
+
+
+# Atelectasis: actual: 10.64%, predicted: 14.13%
+# Cardiomegaly: actual: 2.25%, predicted: 3.50%
+# Consolidation: actual: 3.91%, predicted: 5.64%
+# Edema: actual: 1.46%, predicted: 4.11%
+# Effusion: actual: 13.28%, predicted: 13.94%
+# Emphysema: actual: 3.32%, predicted: 2.76%
+# Fibrosis: actual: 1.66%, predicted: 1.32%
+# Infiltration: actual: 20.02%, predicted: 22.66%
+# Mass: actual: 5.18%, predicted: 6.34%
+# No Finding: actual: 50.98%, predicted: 50.57%
+# Nodule: actual: 6.45%, predicted: 7.68%
+# Pleural_Thickening: actual: 2.83%, predicted: 2.69%
+# Pneumonia: actual: 1.07%, predicted: 1.83%
+# Pneumothorax: actual: 5.47%, predicted: 4.98%
