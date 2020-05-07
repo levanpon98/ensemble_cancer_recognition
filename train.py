@@ -40,7 +40,7 @@ def main(_):
 
     if _flags.model != 'ensemble':
         model.fit_generator(train_gen,
-                            steps_per_epoch=train_len // 32,
+                            steps_per_epoch=100,
                             validation_data=(test_X, test_Y),
                             epochs=_flags.epochs,
                             callbacks=callbacks)
