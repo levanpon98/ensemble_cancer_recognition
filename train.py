@@ -60,7 +60,7 @@ def main(_):
     c_ax.set_ylabel('True Positive Rate')
     fig.savefig('trained_net.png')
 
-    roc_auc_score(test_Y.astype(int), y_pred)
+    print(roc_auc_score(test_Y.astype(int), y_pred))
 
 
 if __name__ == '__main__':

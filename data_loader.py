@@ -71,7 +71,7 @@ def prepare_data(data_path):
 
     print('Scans found:', len(data_image_paths), ', Total Headers', data.shape[0])
     data['path'] = data['Image Index'].map(data_image_paths.get)
-    # data['Finding Labels'] = data['Finding Labels'].map(lambda x: x.replace('No Finding', ''))
+    data['Finding Labels'] = data['Finding Labels'].map(lambda x: x.replace('No Finding', ''))
 
     all_labels = np.unique(list(chain(*data['Finding Labels'].map(lambda x: x.split('|')).tolist())))
     all_labels = [x for x in all_labels if len(x) > 0]
