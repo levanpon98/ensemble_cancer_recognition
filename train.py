@@ -30,13 +30,13 @@ def swish_act(x, beta=1):
     return x * sigmoid(beta * x)
 
 
-def get_callbacks(backbone):
+def get_callbacks():
     callbacks = []
     tensor_board = tf.keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0)
     callbacks.append(tensor_board)
 
     checkpoint = tf.keras.callbacks.ModelCheckpoint(
-        filepath=os.path.join('saved/model.covid19.efficientnet-' + str(backbone) + '.h5'),
+        filepath=os.path.join('saved/model.h5'),
         verbose=1,
         save_best_only=True)
     callbacks.append(checkpoint)
@@ -77,7 +77,7 @@ def main(_):
 
     model = get_model(len(all_labels), input_shape=(_flags.image_size, _flags.image_size, 3))
 
-    callbacks = get_callbacks(_flags.model)
+    callbacks = get_callbacks()
 
     model.fit_generator(train_gen,
                         steps_per_epoch=train_len // _flags.epochs,
