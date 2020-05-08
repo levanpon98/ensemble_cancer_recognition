@@ -100,7 +100,7 @@ def prepare_data(data_path):
         if len(c_label) > 1:  # leave out empty labels
             data[c_label] = data['Finding Labels'].map(lambda finding: 1.0 if c_label in finding else 0)
 
-    all_labels = [c_label for c_label in all_labels if data[c_label].sum() > config.min_cases]
+    all_labels = [c_label for c_label in all_labels if data[c_label].sum() > 1000]
     print('Clean Labels ({})'.format(len(all_labels)), [(c_label, int(data[c_label].sum())) for c_label in all_labels])
 
     return data, all_labels
