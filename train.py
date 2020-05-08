@@ -19,17 +19,6 @@ _flags = flags.FLAGS
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 
-class SwishActivation(Activation):
-
-    def __init__(self, activation, **kwargs):
-        super(SwishActivation, self).__init__(activation, **kwargs)
-        self.__name__ = 'swish_act'
-
-
-def swish_act(x, beta=1):
-    return x * sigmoid(beta * x)
-
-
 def get_callbacks():
     callbacks = []
     tensor_board = tf.keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0)
@@ -49,17 +38,17 @@ def get_model(classes=1000, input_shape=(32, 32, 3)):
     # Adding 2 fully-connected layers to B0.
     x = model.output
 
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = tf.keras.layers.Dropout(0.7)(x)
-
-    x = tf.keras.layers.Dense(512)(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = Activation(swish_act)(x)
-    x = tf.keras.layers.Dropout(0.5)(x)
-
-    x = tf.keras.layers.Dense(128)(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = Activation(swish_act)(x)
+    # x = tf.keras.layers.BatchNormalization()(x)
+    # x = tf.keras.layers.Dropout(0.7)(x)
+    #
+    # x = tf.keras.layers.Dense(512)(x)
+    # x = tf.keras.layers.BatchNormalization()(x)
+    # x = Activation(swish_act)(x)
+    # x = tf.keras.layers.Dropout(0.5)(x)
+    #
+    # x = tf.keras.layers.Dense(128)(x)
+    # x = tf.keras.layers.BatchNormalization()(x)
+    # x = Activation(swish_act)(x)
 
     # Output layer
     predictions = tf.keras.layers.Dense(classes, activation="softmax")(x)
