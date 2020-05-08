@@ -34,7 +34,7 @@ def get_callbacks(backbone):
     callbacks.append(tensor_board)
 
     checkpoint = tf.keras.callbacks.ModelCheckpoint(
-        filepath=os.path.join(config.model_path, f'model.covid19.efficientnet-{backbone}.h5'),
+        filepath=os.path.join(config.model_path, 'model.covid19.efficientnet-' + str(backbone) + '.h5'),
         verbose=1,
         save_best_only=True)
     callbacks.append(checkpoint)
@@ -67,7 +67,7 @@ def main(_):
                         callbacks=callbacks)
 
     y_pred = model.predict(test_X)
-    
+
     for c_label, p_count, t_count in zip(all_labels,
                                          100 * np.mean(y_pred, 0),
                                          100 * np.mean(test_Y, 0)):
