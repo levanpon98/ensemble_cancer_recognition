@@ -25,12 +25,11 @@ class XChest():
     def build(self):
         if self.model_name in self.list_model:
             base_model = self.list_model[self.model_name](include_top=False, weights='imagenet',
-                                                          input_shape=self.input_shape,
-                                                          pooling='avg')
+                                                          input_shape=self.input_shape, )
 
             x = base_model.output
 
-            x = tf.keras.layers.BatchNormalization()(x)
+            x = tf.keras.layers.GlobalAveragePooling2D()(x)
             x = tf.keras.layers.Dropout(0.5)(x)
             x = tf.keras.layers.Dense(units=512, activation=tf.nn.swish)(x)
             x = tf.keras.layers.Dropout(0.5)(x)
