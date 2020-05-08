@@ -6,7 +6,7 @@ from absl import flags, app
 from tensorflow.keras.preprocessing import image
 
 flags.DEFINE_string('image', default=None, help='Path of image')
-flags.DEFINE_string('efficientnet', default='densenet', help='Model name')
+flags.DEFINE_string('model', default='xception', help='Model name')
 
 _flags = flags.FLAGS
 
@@ -32,8 +32,7 @@ def main(_):
     x_chest = XChest(model_name=model_name)
     model = x_chest.build()
 
-    if model_name != 'ensemble':
-        model.load_weights(f'saved/efficientnet.{model_name}.h5')
+    model.load_weights(f'saved/model.{model_name}.h5')
 
     img = image.load_img(image_path, target_size=(256, 256))
     img = image.img_to_array(img)
