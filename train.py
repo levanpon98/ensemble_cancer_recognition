@@ -23,6 +23,7 @@ list_model = {'efficientnet-b0': EfficientNetB0,
 flags.DEFINE_integer('model', default=0, help='Model name')
 flags.DEFINE_string('input', default='/home/levanpon/data/covid-chestxray-dataset/', help='Data Path')
 flags.DEFINE_integer('epochs', default=10, help='Number of epochs')
+flags.DEFINE_integer('batch_size', default=32, help='Number of epochs')
 _flags = flags.FLAGS
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
@@ -54,14 +55,14 @@ def get_model(classes=1000, input_shape=(256, 256, 3), model_name='efficientnet-
 
 def main(_):
     model_name = 'efficientnet-b' + str(int(_flags.model))
-    train_gen, valid_gen, test_X, test_Y, train_len, test_len, all_labels = data_gen(_flags.input)
+    train_gen, valid_gen, test_X, test_Y, train_len, test_len, all_labels = data_gen(_flags.input, _flags.batch_size)
 
     model = get_model(len(all_labels), input_shape=(config.image_height, config.image_width, 3), model_name=model_name)
 
     callbacks = get_callbacks(_flags.model)
 
     model.fit_generator(train_gen,
-                        steps_per_epoch=100,
+                        steps_per_epoch=train_len // _flags.batch_size,
                         validation_data=(test_X, test_Y),
                         epochs=_flags.epochs,
                         callbacks=callbacks)

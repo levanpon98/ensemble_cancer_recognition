@@ -10,7 +10,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import config
 
 
-def data_gen(data_path):
+def data_gen(data_path, batch_size):
     data, all_labels = prepare_data(data_path)
     train_df, valid_df = train_test_split(data,
                                           test_size=0.20,
@@ -37,7 +37,7 @@ def data_gen(data_path):
                                              x_col='path',
                                              y_col='labels',
                                              class_mode='categorical',
-                                             batch_size=32,
+                                             batch_size=batch_size,
                                              classes=all_labels,
                                              target_size=(config.image_height, config.image_width))
 
@@ -46,7 +46,7 @@ def data_gen(data_path):
                                              x_col='path',
                                              y_col='labels',
                                              class_mode='categorical',
-                                             batch_size=256,
+                                             batch_size=batch_size,
                                              classes=all_labels,
                                              target_size=(config.image_height, config.image_width))
 
@@ -55,12 +55,33 @@ def data_gen(data_path):
                                                        x_col='path',
                                                        y_col='labels',
                                                        class_mode='categorical',
-                                                       batch_size=1024,
+                                                       batch_size=batch_size,
                                                        classes=all_labels,
                                                        target_size=(config.image_height, config.image_width)))
 
     return train_gen, valid_gen, test_X, test_Y, train_df.shape[0], valid_df.shape[0], all_labels
 
+
+def prepare_data(data_path):
+    def path(x):
+        return os.path.join('/home/levanpon/data/covid-chestxray-dataset/images', x)
+
+    data = pd.read_csv(os.path.join(data_path, 'metadata.csv'))
+
+    data['path'] = data['filename'].map(lambda x: path(x))
+
+    all_labels = np.unique(list(chain(*data['finding'].map(lambda x: x.split(',')).tolist())))
+    all_labels = [x for x in all_labels if len(x) > 0]
+    print('All Labels ({}): {}'.format(len(all_labels), all_labels))
+
+    for c_label in all_labels:
+        if len(c_label) > 1:  # leave out empty labels
+            data[c_label] = data['finding'].map(lambda finding: 1.0 if c_label in finding else 0)
+
+    # all_labels = [c_label for c_label in all_labels if data[c_label].sum() > config.min_cases]
+    # print('Clean Labels ({})'.format(len(all_labels)), [(c_label, int(data[c_label].sum())) for c_label in all_labels])
+
+    return data, all_labels
 
 # def prepare_data(data_path):
 #     data = pd.read_csv(os.path.join(data_path, 'Data_Entry_2017.csv'))
@@ -84,25 +105,3 @@ def data_gen(data_path):
 #     print('Clean Labels ({})'.format(len(all_labels)), [(c_label, int(data[c_label].sum())) for c_label in all_labels])
 #
 #     return data, all_labels
-
-
-def prepare_data(data_path):
-    def path(x):
-        return os.path.join('/home/levanpon/data/covid-chestxray-dataset/images', x)
-
-    data = pd.read_csv(os.path.join(data_path, 'metadata.csv'))
-
-    data['path'] = data['filename'].map(lambda x: path(x))
-
-    all_labels = np.unique(list(chain(*data['finding'].map(lambda x: x.split(',')).tolist())))
-    all_labels = [x for x in all_labels if len(x) > 0]
-    print('All Labels ({}): {}'.format(len(all_labels), all_labels))
-
-    for c_label in all_labels:
-        if len(c_label) > 1:  # leave out empty labels
-            data[c_label] = data['finding'].map(lambda finding: 1.0 if c_label in finding else 0)
-
-    # all_labels = [c_label for c_label in all_labels if data[c_label].sum() > config.min_cases]
-    # print('Clean Labels ({})'.format(len(all_labels)), [(c_label, int(data[c_label].sum())) for c_label in all_labels])
-
-    return data, all_labels
