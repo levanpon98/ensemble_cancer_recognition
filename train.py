@@ -95,7 +95,7 @@ def main(_):
     callbacks = get_callbacks(_flags.model)
 
     model.fit_generator(train_gen,
-                        steps_per_epoch=train_len // _flags.batch_size,
+                        steps_per_epoch=100,
                         validation_data=(test_X, test_Y),
                         epochs=_flags.epochs,
                         callbacks=callbacks)
