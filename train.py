@@ -6,8 +6,6 @@ from sklearn.metrics import roc_curve, auc, roc_auc_score
 from matplotlib import pyplot as plt
 from data_loader import data_gen
 from tensorflow.keras.applications.xception import Xception
-from tensorflow.keras.layers import Activation
-from tensorflow.keras.backend import sigmoid
 
 flags.DEFINE_string('input', default='/home/levanpon/data/covid-chestxray-dataset/', help='Data Path')
 flags.DEFINE_integer('epochs', default=10, help='Number of epochs')
