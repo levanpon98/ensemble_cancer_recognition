@@ -79,8 +79,8 @@ def get_model(classes=1000, input_shape=(32, 32, 3), model_name='efficientnet-b0
     predictions = tf.keras.layers.Dense(classes, activation="softmax")(x)
 
     model_final = tf.keras.Model(inputs=model.input, outputs=predictions)
-    model_final.compile(loss='binary_crossentropy', optimizer=tf.keras.optimizers.Adam(lr=0.001),
-                        metrics=['binary_accuracy', 'mse'])
+    model_final.compile(loss='categorical_crossentropy', optimizer=tf.keras.optimizers.Adam(lr=0.001),
+                        metrics=['accuracy', 'mse'])
     model_final.summary()
     return model_final
 
