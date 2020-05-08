@@ -3,30 +3,45 @@ import tensorflow as tf
 import numpy as np
 from absl import app, flags
 from sklearn.metrics import roc_curve, auc, roc_auc_score
-# from models import XChest
 from matplotlib import pyplot as plt
 from data_loader import data_gen
-import config
-from tensorflow.keras.applications.efficientnet import EfficientNetB0, EfficientNetB1, EfficientNetB2, EfficientNetB3, \
-    EfficientNetB4, EfficientNetB5, EfficientNetB6, EfficientNetB7
-
-list_model = {'efficientnet-b0': EfficientNetB0,
-              'efficientnet-b1': EfficientNetB1,
-              'efficientnet-b2': EfficientNetB2,
-              'efficientnet-b3': EfficientNetB3,
-              'efficientnet-b4': EfficientNetB4,
-              'efficientnet-b5': EfficientNetB5,
-              'efficientnet-b6': EfficientNetB6,
-              'efficientnet-b7': EfficientNetB7,
-              }
+from tensorflow.keras.applications.efficientnet import EfficientNetB1, EfficientNetB7, EfficientNetB6, EfficientNetB5, \
+    EfficientNetB4, \
+    EfficientNetB3, EfficientNetB2, EfficientNetB0
+from tensorflow.keras.layers import Activation
+from tensorflow.keras.backend import sigmoid
 
 flags.DEFINE_integer('model', default=0, help='Model name')
 flags.DEFINE_string('input', default='/home/levanpon/data/covid-chestxray-dataset/', help='Data Path')
 flags.DEFINE_integer('epochs', default=10, help='Number of epochs')
 flags.DEFINE_integer('batch_size', default=32, help='Number of epochs')
+flags.DEFINE_integer('image_size', default=32, help='Image size')
+
 _flags = flags.FLAGS
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+
+list_model = {
+    'efficientnet-b0': EfficientNetB0,
+    'efficientnet-b1': EfficientNetB1,
+    'efficientnet-b2': EfficientNetB2,
+    'efficientnet-b3': EfficientNetB3,
+    'efficientnet-b4': EfficientNetB4,
+    'efficientnet-b5': EfficientNetB5,
+    'efficientnet-b6': EfficientNetB6,
+    'efficientnet-b7': EfficientNetB7,
+}
+
+
+class SwishActivation(Activation):
+
+    def __init__(self, activation, **kwargs):
+        super(SwishActivation, self).__init__(activation, **kwargs)
+        self.__name__ = 'swish_act'
+
+
+def swish_act(x, beta=1):
+    return x * sigmoid(beta * x)
 
 
 def get_callbacks(backbone):
@@ -35,29 +50,47 @@ def get_callbacks(backbone):
     callbacks.append(tensor_board)
 
     checkpoint = tf.keras.callbacks.ModelCheckpoint(
-        filepath=os.path.join(config.model_path, 'model.covid19.efficientnet-' + str(backbone) + '.h5'),
+        filepath=os.path.join('saved/model.covid19.efficientnet-' + str(backbone) + '.h5'),
         verbose=1,
         save_best_only=True)
     callbacks.append(checkpoint)
     return callbacks
 
 
-def get_model(classes=1000, input_shape=(256, 256, 3), model_name='efficientnet-b0'):
-    base_model = list_model[model_name](include_top=False, weights='imagenet', classes=classes,
-                                        input_shape=input_shape)
-    x = base_model.output
-    output = tf.keras.layers.Dense(units=13, activation=tf.nn.softmax)(x)
-    model = tf.keras.Model(base_model.input, output)
-    model.compile(optimizer=tf.keras.optimizers.Adam(lr=0.001), loss='binary_crossentropy',
-                  metrics=['binary_accuracy', 'mae'])
-    return model
+def get_model(classes=1000, input_shape=(32, 32, 3), model_name='efficientnet-b0'):
+    model = list_model[model_name](include_top=False, input_shape=input_shape, pooling='avg', weights='imagenet')
+
+    # Adding 2 fully-connected layers to B0.
+    x = model.output
+
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Dropout(0.7)(x)
+
+    x = tf.keras.layers.Dense(512)(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = Activation(swish_act)(x)
+    x = tf.keras.layers.Dropout(0.5)(x)
+
+    x = tf.keras.layers.Dense(128)(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = Activation(swish_act)(x)
+
+    # Output layer
+    predictions = tf.keras.layers.Dense(classes, activation="softmax")(x)
+
+    model_final = tf.keras.Model(inputs=model.input, outputs=predictions)
+    model_final.compile(loss='binary_crossentropy', optimizer=tf.keras.optimizers.Adam(lr=0.001),
+                        metrics=['binary_accuracy', 'mse'])
+    model_final.summary()
+    return model_final
 
 
 def main(_):
     model_name = 'efficientnet-b' + str(int(_flags.model))
-    train_gen, valid_gen, test_X, test_Y, train_len, test_len, all_labels = data_gen(_flags.input, _flags.batch_size)
+    train_gen, valid_gen, test_X, test_Y, train_len, test_len, all_labels = data_gen(_flags.input, _flags.batch_size,
+                                                                                     _flags.image_size)
 
-    model = get_model(len(all_labels), input_shape=(config.image_height, config.image_width, 3), model_name=model_name)
+    model = get_model(len(all_labels), input_shape=(_flags.image_size, _flags.image_size, 3), model_name=model_name)
 
     callbacks = get_callbacks(_flags.model)
 

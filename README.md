@@ -5,7 +5,7 @@ You can download dataset in [NIH Chest X-rays](https://www.kaggle.com/nih-chest-
 ## Train & Test model
 To train model, you can run the below script
 ```shell script
-python train.py --model densenet --input path/of/input/data
+python train.py --efficientnet densenet --input path/of/input/data
 ```
 You can choose one of the following models 
 - densenet

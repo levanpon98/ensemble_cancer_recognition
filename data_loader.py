@@ -7,10 +7,8 @@ from glob import glob
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-import config
 
-
-def data_gen(data_path, batch_size):
+def data_gen(data_path, batch_size, image_size):
     data, all_labels = prepare_data(data_path)
     train_df, valid_df = train_test_split(data,
                                           test_size=0.20,
@@ -39,7 +37,7 @@ def data_gen(data_path, batch_size):
                                              class_mode='categorical',
                                              batch_size=batch_size,
                                              classes=all_labels,
-                                             target_size=(config.image_height, config.image_width))
+                                             target_size=(image_size, image_size))
 
     valid_gen = core_idg.flow_from_dataframe(dataframe=valid_df,
                                              directory=None,
@@ -48,7 +46,7 @@ def data_gen(data_path, batch_size):
                                              class_mode='categorical',
                                              batch_size=batch_size,
                                              classes=all_labels,
-                                             target_size=(config.image_height, config.image_width))
+                                             target_size=(image_size, image_size))
 
     test_X, test_Y = next(core_idg.flow_from_dataframe(dataframe=valid_df,
                                                        directory=None,
@@ -57,7 +55,7 @@ def data_gen(data_path, batch_size):
                                                        class_mode='categorical',
                                                        batch_size=batch_size,
                                                        classes=all_labels,
-                                                       target_size=(config.image_height, config.image_width)))
+                                                       target_size=(image_size, image_size)))
 
     return train_gen, valid_gen, test_X, test_Y, train_df.shape[0], valid_df.shape[0], all_labels
 
