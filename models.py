@@ -5,7 +5,7 @@ from tensorflow.keras.applications.inception_v3 import InceptionV3
 from tensorflow.keras.applications.xception import Xception
 from tensorflow.keras.applications.nasnet import NASNetMobile
 from tensorflow.keras.applications.inception_resnet_v2 import InceptionResNetV2
-
+from tensorflow.keras.applications.
 
 class XChest():
     def __init__(self, classes=1000, model_name=None, input_shape=(256, 256, 3)):
@@ -13,7 +13,7 @@ class XChest():
         self.classes = classes
         self.input_shape = input_shape
         self.optimizer = tf.keras.optimizers.RMSprop()
-        self.loss = 'categorical_crossentropy'
+        self.loss = 'binary_crossentropy'
         self.list_model = {
             'densenet': DenseNet121,
             'xception': Xception,
