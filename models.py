@@ -21,7 +21,7 @@ class XChest():
             'inceptionv3': InceptionV3,
             'nasnet': NASNetMobile,
             'inception_resnet_v2': InceptionResNetV2,
-            'dpn': DPN107
+            'dpn': DPN137
         }
 
     def build(self):
