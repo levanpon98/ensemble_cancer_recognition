@@ -12,7 +12,7 @@ class XChest():
         self.model_name = model_name
         self.classes = classes
         self.input_shape = input_shape
-        self.optimizer = tf.keras.optimizers.Adam(lr=0.001)
+        self.optimizer = tf.keras.optimizers.RMSprop()
         self.loss = 'binary_crossentropy'
         self.list_model = {
             'densenet': DenseNet121,
@@ -33,8 +33,8 @@ class XChest():
             # x = tf.keras.layers.Dropout(0.5)(x)
             # x = tf.keras.layers.Dense(units=512, activation=tf.nn.swish)(x)
             # x = tf.keras.layers.Dropout(0.5)(x)
-            x = tf.keras.layers.Dense(units=128, activation=tf.nn.swish)(x)
-            x = tf.keras.layers.Dropout(0.4)(x)
+            # x = tf.keras.layers.Dense(units=128, activation=tf.nn.swish)(x)
+            # x = tf.keras.layers.Dropout(0.4)(x)
             output = tf.keras.layers.Dense(units=self.classes, activation="sigmoid")(x)
 
             model = tf.keras.Model(base_model.input, output)
@@ -42,3 +42,6 @@ class XChest():
             model.compile(optimizer=self.optimizer, loss=self.loss,
                           metrics=['accuracy'])
             return model
+
+
+
