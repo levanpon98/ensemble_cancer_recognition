@@ -39,7 +39,7 @@ def main(_):
     x_chest = XChest(classes=len(all_labels), model_name=_flags.model,
                      input_shape=(_flags.image_size, _flags.image_size, 3))
     model = x_chest.build()
-
+    model.summary()
     callbacks = get_callbacks(_flags.model)
 
     model.fit(train_gen,
