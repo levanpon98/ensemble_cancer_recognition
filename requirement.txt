@@ -1,7 +1,6 @@
-tensorflow-gpu==2.1.0
+tensorflow-gpu==2.0.0
 pandas
 sklearn
-keras
-keras_applications>=1.0.7,<=1.0.8
-scikit-image
+matplotlib
+Pillow
 
