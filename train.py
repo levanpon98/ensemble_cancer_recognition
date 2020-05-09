@@ -26,9 +26,9 @@ def get_callbacks(model_name):
         filepath=os.path.join(config.model_path, f'model.{model_name}.h5'),
         verbose=1,
         save_best_only=True)
-    erly = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=3) 
+    # erly = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=3)
     callbacks.append(checkpoint)
-    callbacks.append(erly)
+    # callbacks.append(erly)
     return callbacks
 
 
