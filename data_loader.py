@@ -10,7 +10,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 def data_gen(data_path, batch_size, image_size):
     data, all_labels = prepare_data(data_path)
-    train_df, valid_df = train_test_split(data, test_size=0.20, random_state=2018,)
+    train_df, valid_df = train_test_split(data, test_size=0.20, random_state=2018, )
     print('train', train_df.shape[0], 'validation', valid_df.shape[0])
 
     core_idg = ImageDataGenerator(rescale=1 / 255,
@@ -60,7 +60,8 @@ def prepare_data(data_path):
     new_data = []
     data_image_paths = {os.path.basename(x): x for x in
                         glob(os.path.join(data_path, 'images*', '*', '*.png'))}
-
+    # data_image_paths = {os.path.basename(x): x for x in
+    #                     glob(os.path.join(data_path, '*', '*.png'))}
     print('Scans found:', len(data_image_paths), ', Total Headers', data.shape[0])
     data['path'] = data['Image Index'].map(data_image_paths.get)
     data['Finding Labels'] = data['Finding Labels'].map(lambda x: x.replace('No Finding', ''))
