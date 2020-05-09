@@ -29,11 +29,12 @@ class XChest():
 
             x = base_model.output
 
-            x = tf.keras.layers.GlobalAveragePooling2D()(x)
-            x = tf.keras.layers.Dropout(0.5)(x)
-            x = tf.keras.layers.Dense(units=512, activation=tf.nn.swish)(x)
-            x = tf.keras.layers.Dropout(0.5)(x)
+            # x = tf.keras.layers.GlobalAveragePooling2D()(x)
+            # x = tf.keras.layers.Dropout(0.5)(x)
+            # x = tf.keras.layers.Dense(units=512, activation=tf.nn.swish)(x)
+            # x = tf.keras.layers.Dropout(0.5)(x)
             x = tf.keras.layers.Dense(units=128, activation=tf.nn.swish)(x)
+            x = tf.keras.layers.Dropout(0.4)(x)
             output = tf.keras.layers.Dense(units=self.classes, activation="sigmoid")(x)
 
             model = tf.keras.Model(base_model.input, output)
