@@ -10,14 +10,8 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 def data_gen(data_path, batch_size, image_size):
     data, all_labels = prepare_data(data_path)
-    train_df, valid_df = train_test_split(data,
-                                          test_size=0.20,
-                                          random_state=2018,
-                                          stratify=data['Finding Labels'].map(lambda x: x[:4]))
+    train_df, valid_df = train_test_split(data, test_size=0.20, random_state=2018,)
     print('train', train_df.shape[0], 'validation', valid_df.shape[0])
-
-    train_df['labels'] = train_df.apply(lambda x: x['Finding Labels'].split('|'), axis=1)
-    valid_df['labels'] = valid_df.apply(lambda x: x['Finding Labels'].split('|'), axis=1)
 
     core_idg = ImageDataGenerator(rescale=1 / 255,
                                   samplewise_center=True,
@@ -34,7 +28,7 @@ def data_gen(data_path, batch_size, image_size):
     train_gen = core_idg.flow_from_dataframe(dataframe=train_df,
                                              directory=None,
                                              x_col='path',
-                                             y_col='labels',
+                                             y_col='label',
                                              class_mode='categorical',
                                              batch_size=batch_size,
                                              classes=all_labels,
@@ -43,7 +37,7 @@ def data_gen(data_path, batch_size, image_size):
     valid_gen = core_idg.flow_from_dataframe(dataframe=valid_df,
                                              directory=None,
                                              x_col='path',
-                                             y_col='labels',
+                                             y_col='label',
                                              class_mode='categorical',
                                              batch_size=batch_size,
                                              classes=all_labels,
@@ -52,7 +46,7 @@ def data_gen(data_path, batch_size, image_size):
     test_X, test_Y = next(core_idg.flow_from_dataframe(dataframe=valid_df,
                                                        directory=None,
                                                        x_col='path',
-                                                       y_col='labels',
+                                                       y_col='label',
                                                        class_mode='categorical',
                                                        batch_size=1024,
                                                        classes=all_labels,
@@ -63,7 +57,7 @@ def data_gen(data_path, batch_size, image_size):
 
 def prepare_data(data_path):
     data = pd.read_csv(os.path.join(data_path, 'Data_Entry_2017.csv'))
-
+    new_data = []
     data_image_paths = {os.path.basename(x): x for x in
                         glob(os.path.join(data_path, 'images*', '*', '*.png'))}
 
@@ -80,6 +74,10 @@ def prepare_data(data_path):
             data[c_label] = data['Finding Labels'].map(lambda finding: 1.0 if c_label in finding else 0)
 
     all_labels = [c_label for c_label in all_labels if data[c_label].sum() > 1000]
-    print('Clean Labels ({})'.format(len(all_labels)), [(c_label, int(data[c_label].sum())) for c_label in all_labels])
+    for index, item in data.iterrows():
+        for c_label in all_labels:
+            if item[c_label]:
+                new_data.append((item['path'], c_label))
+    new_data = pd.DataFrame(new_data, columns=['path', 'label'])
 
-    return data, all_labels
+    return new_data, all_labels

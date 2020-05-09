@@ -13,7 +13,7 @@ class XChest():
         self.classes = classes
         self.input_shape = input_shape
         self.optimizer = tf.keras.optimizers.RMSprop()
-        self.loss = 'binary_crossentropy'
+        self.loss = 'categorical_crossentropy'
         self.list_model = {
             'densenet': DenseNet121,
             'xception': Xception,

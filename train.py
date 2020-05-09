@@ -2,7 +2,7 @@ import os
 import tensorflow as tf
 import numpy as np
 from absl import app, flags
-from sklearn.metrics import roc_curve, auc, roc_auc_score
+from sklearn.metrics import roc_curve, auc, roc_auc_score, accuracy_score, average_precision_score
 from models import XChest
 from matplotlib import pyplot as plt
 from data_loader import data_gen
@@ -63,7 +63,11 @@ def main(_):
     c_ax.set_ylabel('True Positive Rate')
     fig.savefig('trained_net.png')
 
-    print(roc_auc_score(test_Y.astype(int), y_pred))
+    print('================')
+    print('ROC auc score: {:.3f}'.format(roc_auc_score(test_Y.astype(int), y_pred)))
+    print('Accuracy score: {:.3f}'.format(accuracy_score(test_Y.astype(int), y_pred)))
+    print('Average precision score, micro-averaged over all classes: {:.3f}'.format(
+        average_precision_score(test_Y.astype(int), y_pred, average="micro")))
 
 
 if __name__ == '__main__':
