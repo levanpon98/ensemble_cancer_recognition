@@ -5,7 +5,8 @@ from tensorflow.keras.applications.inception_v3 import InceptionV3
 from tensorflow.keras.applications.xception import Xception
 from tensorflow.keras.applications.nasnet import NASNetMobile
 from tensorflow.keras.applications.inception_resnet_v2 import InceptionResNetV2
-# from tensorflow.keras.applications.
+from dpn import DPN137, DPN92, DPN98, DPN107
+
 
 class XChest():
     def __init__(self, classes=1000, model_name=None, input_shape=(256, 256, 3)):
@@ -19,7 +20,8 @@ class XChest():
             'xception': Xception,
             'inceptionv3': InceptionV3,
             'nasnet': NASNetMobile,
-            'inception_resnet_v2': InceptionResNetV2
+            'inception_resnet_v2': InceptionResNetV2,
+            'dpn': DPN107
         }
 
     def build(self):
@@ -42,6 +44,3 @@ class XChest():
             model.compile(optimizer=self.optimizer, loss=self.loss,
                           metrics=['accuracy'])
             return model
-
-
-
