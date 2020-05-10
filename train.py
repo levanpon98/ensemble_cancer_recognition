@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 from data_loader import data_gen
 import config
 
-flags.DEFINE_string('model', default='xception', help='Model name')
+flags.DEFINE_string('model', default='inception_resnet_v2', help='Model name')
 flags.DEFINE_string('input', default='/home/levanpon/data/ChestXray-NIHCC/', help='Data Path')
 flags.DEFINE_integer('epochs', default=10, help='Number of epochs')
 flags.DEFINE_integer('batch_size', default=32, help='Number of epochs')
@@ -33,6 +33,9 @@ def get_callbacks(model_name):
 
 
 def main(_):
+    if not os.path.exists(config.model_path):
+        os.mkdir(config.model_path)
+
     train_gen, valid_gen, test_X, test_Y, train_len, test_len, all_labels = data_gen(_flags.input, _flags.batch_size,
                                                                                      _flags.image_size)
 

@@ -6,7 +6,7 @@ from absl import flags, app
 from tensorflow.keras.preprocessing import image
 
 flags.DEFINE_string('image', default=None, help='Path of image')
-flags.DEFINE_string('model', default='xception', help='Model name')
+flags.DEFINE_string('model', default='inception_resnet_v2', help='Model name')
 
 _flags = flags.FLAGS
 
